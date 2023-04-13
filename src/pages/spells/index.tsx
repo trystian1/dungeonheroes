@@ -11,18 +11,18 @@ export default function AddChar() {
 
     useEffect(() => {
         if (!selectedClass) return;
+        setSpells([]);
+        setClassData(undefined);
 
         fetch(`api/dndapi?path=classes/${selectedClass}`)
             .then(response => response.json())
             .then(response => {
-                console.log(response);
                 setClassData(response.data);
             });
 
         fetch(`api/spells?class=${selectedClass}`) 
             .then(response => response.json())
             .then(response => {
-                
                 setSpells(response.spells);
             });   
 
