@@ -1,3 +1,4 @@
+
 :root {
   --max-width: 1100px;
   --border-radius: 12px;
@@ -86,13 +87,13 @@ body {
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
+  /* color: rgb(var(--foreground-rgb));
   background: linear-gradient(
       to bottom,
       transparent,
       rgb(var(--background-end-rgb))
     )
-    rgb(var(--background-start-rgb));
+    rgb(var(--background-start-rgb)); */
 }
 
 a {
@@ -100,8 +101,61 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
   }
+} */
+
+@font-face {
+  font-family: dungeons;
+  src: url('./DUNGRG__.TTF');
+}
+
+h1 {
+  font-family: dungeons;
+  font-size: 4em;
+}
+body {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.spell-wrap {
+  position: relative;
+  background-color: #FFEFF4;
+  padding: 10px
+}
+
+.spell-wrap:nth-child(odd) {
+  background-color: #F8D5B5;
+}
+
+.spell-wrap h2 {
+  color: #4a2932;
+}
+
+.spell-info span {
+  margin-right: 5px;
+  font-style: italic;
+}
+
+.level {
+  position: absolute;
+  font-size: 2em;
+  color: #e8443c;
+  top: 0;
+  right: 10px;
+
+}
+
+.spell-description-line {
+  margin-bottom: 5px;
+}
+
+.damage_at_level { 
+  font-size: 1.2em;
+  color: #e8443c;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
