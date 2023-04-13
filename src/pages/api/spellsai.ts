@@ -1,7 +1,7 @@
 import { Configuration, OpenAIApi } from "openai";
-import { load } from 'cheerio';
 import { initializeApp } from "firebase/app";
 import { getDatabase, set, ref } from "firebase/database";
+import type { NextApiRequest, NextApiResponse } from 'next'
 
 const firebaseConfig = {
     // ...
@@ -76,7 +76,7 @@ const notInSRD = [
 
 export default async function handler(
     req: NextApiRequest,
-    res: NextApiResponse<Data>
+    res: NextApiResponse<any>
   ) {
     
     const dndClass = req.query.class;
@@ -95,12 +95,14 @@ export default async function handler(
         - range of the spell
         - spell description
     `;
+
+    
     const completion = await openai.createChatCompletion({
         model: "gpt-3.5-turbo",
         messages: [{role: "user", content: prompt}],
         max_tokens: 4000
     });
-    const spell = completion.data.choices[0].message.content;
+    const spell = completion?.data?.choices[0]?.message?.content || "";
     
             const spellObj = {
             name: getTextBetween('Name', 'Classes', spell).trim(),
@@ -127,7 +129,7 @@ export default async function handler(
 
         if (spellObj.name) {
             setTimeout(() => {
-                saveSpell(spellObj)
+                saveSpell(spellObj, i)
             }, 100)
         }
 
@@ -178,7 +180,7 @@ export default async function handler(
     //return res.status(200).json({ message: spellObj });
 };
 
-function saveSpell(spell, i) {
+function saveSpell(spell: any, i: number) {
 
     // Initialize Firebase
       const app = initializeApp(firebaseConfig);
@@ -189,7 +191,7 @@ function saveSpell(spell, i) {
       set(ref(database, 'spells/' + spell.name), spell);
 }
 
-function getTextBetween(start, end, full, secondGuess = '', log = false) {
+function getTextBetween(start: string, end: string, full: string, secondGuess = '', log = false) {
     const startFound = full.toLowerCase().indexOf(start.toLowerCase());
     
     let startIndex = start !== '' ? (startFound !== -1 ? startFound + start.length : -1) : 0;

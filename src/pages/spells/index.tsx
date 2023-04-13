@@ -6,7 +6,7 @@ import { Checkbox, FormControlLabel, Input, InputLabel, TextField } from "@mui/m
 
 export default function AddChar() {
     const [selectedClass, setSelectedClass] = useState('');
-    const [classData, setClassData] = useState(undefined);
+    const [classData, setClassData] = useState<any>(undefined);
     const [spells, setSpells] = useState([])
 
     useEffect(() => {
@@ -61,7 +61,7 @@ const SelectClass = ({ setSelectedClass, selectedClass }: {setSelectedClass: any
     return <FormControl fullWidth> 
         <InputLabel id="demo-simple-select-label">Select class</InputLabel>
             <Select sx={{ color: '#fff'}} value={selectedClass} label="Choose your class" id="demo-simple-select-label" labelId="demo-simple-select-label" onChange={handleChange}>
-                {classes?.map(dndClass =>  <MenuItem value={dndClass.index}>{dndClass.name}</MenuItem>)}
+                {classes?.map((dndClass: any, i: number) =>  <MenuItem key={i} value={dndClass.index}>{dndClass.name}</MenuItem>)}
                 </Select>
         </FormControl>
 }
@@ -83,11 +83,11 @@ const SpellsFinder = ({spells} : { spells: any[]}) => {
     return <>
          {spells.length > 0 && <TextField value={textFilter} onChange={evt => setTextFilter(evt.target.value)} id="outlined-basic" label="Search spell" variant="outlined" />}
          {spells.length > 0 &&<Select sx={{ color: '#fff', marginLeft:'10px', width: '100px'}} value={level} label="Lvl" id="demo-simple-select-label" labelId="demo-simple-select-label" onChange={evt => setLevel(evt.target.value)}>
-                {[...arr, 'all']?.map(level =>  <MenuItem value={level.toString()}>{level}</MenuItem>)}
+                {[...arr, 'all']?.map(level =>  <MenuItem key={level.toString()} value={level.toString()}>{level}</MenuItem>)}
          </Select>}
          {spells.length > 0 && schools.size > 0 && <div>
             {Array.from(schools).map(value => 
-               <FormControlLabel control={<Checkbox checked={selectedSchools[value] || false} onChange={onChangeSchool} name={value} />} label={value} />
+               <FormControlLabel key={value} control={<Checkbox checked={selectedSchools[value] || false} onChange={onChangeSchool} name={value} />} label={value} />
             )}</div>}
          {spells.filter(spell => spell.name.toLowerCase().includes(textFilter.toLowerCase()))
                 .filter(spell => {
@@ -101,7 +101,7 @@ const SpellsFinder = ({spells} : { spells: any[]}) => {
                         || selectedSchools[spell.school.name.toLowerCase()];
 
                 })
-                .map(spell => <Spell spell={spell} />)}
+                .map(spell => <Spell key={spell.name} spell={spell} />)}
         </>
 }
 
@@ -117,11 +117,11 @@ const Spell = ({ spell} : { spell: any}) => {
             <div><p className="damage_at_levels">{spell.damage?.damage_at_character_level && <>
                 <p>Damage at levels:</p>
             {Object.keys(spell.damage.damage_at_character_level).map(key => {
-                return <p className="damage_at_level">{key}: {spell.damage.damage_at_character_level[key]}</p>
+                return <p key={key} className="damage_at_level">{key}: {spell.damage.damage_at_character_level[key]}</p>
             })}
             </>}
             </p></div>
-            {spell?.desc.map((description: string) => <p className="spell-description-line">{description}</p>)}
+            {spell?.desc.map((description: string, i: number) => <p key={i} className="spell-description-line">{description}</p>)}
         
         
         </>}        
