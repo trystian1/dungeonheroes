@@ -56,7 +56,6 @@ export default async function handler(
           }
           const classes : String[] = spell.classes.split(',').map((a : String) => a.toLowerCase());
           if (dndClass && classes.includes(dndClass.toLowerCase())) {
-            console.log(spell.name);
             spells.push(spell);
           }
           
