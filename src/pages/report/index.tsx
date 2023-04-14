@@ -1,22 +1,34 @@
 import { useEffect, useState } from "react"
 import { Button, TextField } from "@mui/material";
+import { Configuration, OpenAIApi } from "openai";
+
 
 export default function Report() {
 
   const [date, setDate] = useState('');
-  const [report, setReport] = useState('');
+  const [report, setReport] = useState<string | undefined>('');
   const [loading, setIsLoading] = useState(false);
-  const [responseText, setReponseText] = useState('');
+  const [responseText, setReponseText] = useState<string | undefined>('');
  
-  const generateReport = () => {
-    setIsLoading(true);
-    fetch(`api/report?report=${report}&date=${date}`) 
-    .then(response => response.json())
-    .then(response => {
-        console.log(response, response.report);
-        setReponseText(response.report);
-        setIsLoading(false);
+  const generateReport = async () => {
+    setIsLoading(true)
+    const prompt = `You are a great dungeons master, can you write the following text into an exciting dungeons and dragons story? Write this as a great fantasy writer, should bring excitement to the user.
+    ${report}
+`;
+    console.log('CALLING')
+    const data = await fetch(`api/key`) 
+    .then(response => response.json());
+    const configuration = new Configuration({
+        apiKey: data.key
+      });
+    const openai = new OpenAIApi(configuration);
+    const completion = await openai.createChatCompletion({
+        model: "gpt-3.5-turbo",
+        messages: [{role: "user", content: prompt}]
     });
+    const reportRes = completion?.data?.choices[0]?.message?.content
+    setReponseText(completion?.data?.choices[0]?.message?.content);
+    fetch(`api/report?report=${reportRes}&date=${date}`) 
   }
 
   return <div>

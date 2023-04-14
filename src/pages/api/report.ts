@@ -16,19 +16,8 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<any>
   ) {
-    const prompt = `You are a great dungeons master, can you write the following text into an exciting dungeons and dragons story? Write this as a great fantasy writer, should bring excitement to the user.
-    ${req.query.report}
-`;
-    console.log('CALLING')
-    const completion = await openai.createChatCompletion({
-        model: "gpt-3.5-turbo",
-        messages: [{role: "user", content: prompt}]
-    });
-
-    const report = completion?.data?.choices[0]?.message?.content;
-    saveReport(report, req.query.date)
-    console.log(report);
-    return res.status(200).json({ report });
+    saveReport(req.query.report, req.query.date)
+    return res.status(200).json({});
   }
 
   function saveReport(report: any, date: any) {
