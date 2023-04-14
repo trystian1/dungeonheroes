@@ -60,12 +60,11 @@ export default async function handler(
           
         })
       } else {
-        console.log("No data available");
+        console.log("No data available1");
       }
     } catch(error) {
       console.error(error);
     }
-
     return res.status(200).json({ spells })
   })
   
