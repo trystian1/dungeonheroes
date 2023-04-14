@@ -29,10 +29,10 @@ export default async function handler(
   //   console.error(error);
   // });
   const dndClass = req.query.class as String;
-
-  return fetch(`https://www.dnd5eapi.co/api/classes/${req.query.class}/spells`).then(async data => {
+  const url = req.query.class === 'all' ? 'https://www.dnd5eapi.co/api/spells' : `https://www.dnd5eapi.co/api/classes/${req.query.class}/spells`;
+  
+  return fetch(url).then(async data => {
     const spells = await data.json().then(async data => {
-
       return await Promise.all(data.results.map(async (spell : any) => {
         const response = await fetch(`https://www.dnd5eapi.co${spell.url}`);
         const spellResponse = await response.json();
@@ -47,15 +47,14 @@ export default async function handler(
     
     try {
       const snapshot = await get(child(dbRef, `spells`));
-      console.log(snapshot);
       if (snapshot.exists()) {
-        console.log(typeof snapshot.val());
         Object.values(snapshot.val()).forEach((spell : any) => {
           if (!spell.classes.length) {
             console.log(spell.name, 'does not have a class')
           }
-          const classes : String[] = spell.classes.split(',').map((a : String) => a.toLowerCase());
-          if (dndClass && classes.includes(dndClass.toLowerCase())) {
+
+          const classes : String[] = spell.classes.split(',').map((a : String) => a.toLowerCase().trim());
+          if (dndClass === 'all' || (dndClass && classes.includes(dndClass.toLowerCase()))) {
             spells.push(spell);
           }
           
@@ -67,8 +66,6 @@ export default async function handler(
       console.error(error);
     }
 
-
-    console.log('RETTTUUUURN')
     return res.status(200).json({ spells })
   })
   

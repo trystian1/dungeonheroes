@@ -7,10 +7,12 @@ import { Checkbox, FormControlLabel, Input, InputLabel, TextField } from "@mui/m
 export default function AddChar() {
     const [selectedClass, setSelectedClass] = useState('');
     const [classData, setClassData] = useState<any>(undefined);
-    const [spells, setSpells] = useState([])
+    const [spells, setSpells] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         if (!selectedClass) return;
+        setIsLoading(true);
         setSpells([]);
         setClassData(undefined);
 
@@ -24,6 +26,7 @@ export default function AddChar() {
             .then(response => response.json())
             .then(response => {
                 setSpells(response.spells);
+                setIsLoading(false);
             });   
 
     }, [selectedClass])
@@ -32,6 +35,7 @@ export default function AddChar() {
         <h1>Spell finder</h1>
         <SelectClass setSelectedClass={setSelectedClass} selectedClass={selectedClass} />
         <h2 className="class_title">{classData?.name}</h2>
+        {isLoading && <p>Loading.......</p>}
         <SpellsFinder spells={spells} />    
     </>
 }
@@ -52,8 +56,7 @@ const SelectClass = ({ setSelectedClass, selectedClass }: {setSelectedClass: any
         fetch('api/dndapi?path=classes')
             .then(response => response.json())
             .then(response => {
-                console.log(response);
-                setClasses(response.data.results);
+                setClasses([...response.data.results, { name: 'All', index: 'all' }]);
             });
     }, []);
 
@@ -85,13 +88,16 @@ const SpellsFinder = ({spells} : { spells: any[]}) => {
          {spells.length > 0 &&<Select sx={{ color: '#fff', marginLeft:'10px', width: '100px'}} value={level} label="Lvl" id="demo-simple-select-label" labelId="demo-simple-select-label" onChange={evt => setLevel(evt.target.value)}>
                 {[...arr, 'all']?.map(level =>  <MenuItem key={level.toString()} value={level.toString()}>{level}</MenuItem>)}
          </Select>}
+         
          {spells.length > 0 && schools.size > 0 && <div>
             {Array.from(schools).map(value => 
                <FormControlLabel key={value} control={<Checkbox checked={selectedSchools[value] || false} onChange={onChangeSchool} name={value} />} label={value} />
             )}</div>}
          {spells.filter(spell => spell.name.toLowerCase().includes(textFilter.toLowerCase()))
                 .filter(spell => {
-                    return (level && level !== 'all') ? spell.level.toString().includes(level) : true;
+                    return (level && level !== 'all') 
+                        ? spell.level.toString().includes(level) 
+                        : true;
                 })
                 .filter(spell => {
                     if (!Object.keys(selectedSchools).length || Object.values(selectedSchools).every(school => school === false)) {
@@ -101,7 +107,7 @@ const SpellsFinder = ({spells} : { spells: any[]}) => {
                         || selectedSchools[spell.school.name.toLowerCase()];
 
                 })
-                .map(spell => <Spell key={spell.name} spell={spell} />)}
+                .map((spell, i) => <Spell key={`${i}_${spell.name}`} spell={spell} />)}
         </>
 }
 
@@ -117,7 +123,11 @@ const Spell = ({ spell} : { spell: any}) => {
             <div><p className="damage_at_levels">{spell.damage?.damage_at_character_level && <>
                 <p>Damage at levels:</p>
             {Object.keys(spell.damage.damage_at_character_level).map(key => {
-                return <p key={key} className="damage_at_level">{key}: {spell.damage.damage_at_character_level[key]}</p>
+                const damageAtLevel = spell.damage.damage_at_character_level[key];
+                if (damageAtLevel === 'None' || damageAtLevel == 'N/A') {
+                    return null;
+                }
+                return <p key={key} className="damage_at_level">{key}: {damageAtLevel}</p>
             })}
             </>}
             </p></div>
