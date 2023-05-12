@@ -19,7 +19,7 @@ export const players : Player[] = [
     },
     {
         name: 'Baroet',
-        classDnd: 'Sorcerer',
+        classDnd: 'Barbarian',
         level: 6
     }
 ]
