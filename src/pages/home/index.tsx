@@ -71,7 +71,7 @@ const PlayerCard = ({ name, classDnd, level} : Player) => {
             </Text>
           </Grid>
           <Grid xs={12}>
-            <Text css={{ color: "$accents8" }}>nextui.org</Text>
+            <Text css={{ color: "$accents8" }}>level: {level}</Text>
           </Grid>
         </Grid.Container>
       </Card.Header>
