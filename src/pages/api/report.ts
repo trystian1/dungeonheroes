@@ -2,28 +2,28 @@ import { Configuration, OpenAIApi } from "openai";
 import { initializeApp } from "firebase/app";
 import { getDatabase, set, ref } from "firebase/database";
 import type { NextApiRequest, NextApiResponse } from 'next'
+import firebaseapp from "@/util/firebaseapp";
 
 const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
   });
-const openai = new OpenAIApi(configuration);
-const firebaseConfig = {
-    // ...
-    // The value of `databaseURL` depends on the location of the database
-    databaseURL: "https://dungeonsdragons-f84ec-default-rtdb.europe-west1.firebasedatabase.app",
-  };
+
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<any>
   ) {
-    saveReport(req.query.report, req.query.date)
+    console.log('SAVE REPORT?')
+    saveReport(req.query.report, req.query.uuid, req.query.date, req.query.imageUrl)
     return res.status(200).json({});
   }
 
-  function saveReport(report: any, date: any) {
-      // Initialize Firebase
-      const app = initializeApp(firebaseConfig);
+  function saveReport(report: any, uuid: any, date: any, imageUrl: any) {
+
       // Initialize Realtime Database and get a reference to the service
-      const database = getDatabase(app);
-      set(ref(database, 'report/' + date), report);
+      const database = getDatabase(firebaseapp);
+      set(ref(database, 'reports/' + uuid), {
+        report,
+        date,
+        imageUrl
+      });
 }

@@ -3,6 +3,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { Checkbox, FormControlLabel, Input, InputLabel, TextField } from "@mui/material";
+import { Button, Link } from "@nextui-org/react";
 
 export default function AddChar() {
     const [selectedClass, setSelectedClass] = useState('');
@@ -19,9 +20,10 @@ export default function AddChar() {
         fetch(`api/dndapi?path=classes/${selectedClass}`)
             .then(response => response.json())
             .then(response => {
+                console.log(response.data);
                 setClassData(response.data);
             });
-
+        console.log(selectedClass);
         fetch(`api/spells?class=${selectedClass}`) 
             .then(response => response.json())
             .then(response => {
@@ -32,6 +34,14 @@ export default function AddChar() {
     }, [selectedClass])
 
     return <>
+        <Button css={{marginBottom: '20px'}}>
+        <Link
+          css={{ color: 'white '}}
+          href={`/home`}
+        >
+          Home
+        </Link>
+        </Button>
         <h1>Spell finder</h1>
         <SelectClass setSelectedClass={setSelectedClass} selectedClass={selectedClass} />
         <h2 className="class_title">{classData?.name}</h2>
@@ -69,9 +79,9 @@ const SelectClass = ({ setSelectedClass, selectedClass }: {setSelectedClass: any
         </FormControl>
 }
 
-const SpellsFinder = ({spells} : { spells: any[]}) => {
+export const SpellsFinder = ({spells, showAddButton = false, addSpell = () => {}, filterLevel} : { spells: any[], showAddButton?: boolean, addSpell?: any, filterLevel?: string}) => {
     const [textFilter, setTextFilter] = useState<string>("");
-    const [level, setLevel] = useState<string | undefined>();
+    const [level, setLevel] = useState<string | undefined>(filterLevel);
     const [selectedSchools, setSchools] = useState<{[key: string]: boolean}>({});
 
     const onChangeSchool = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -107,17 +117,18 @@ const SpellsFinder = ({spells} : { spells: any[]}) => {
                         || selectedSchools[spell.school.name.toLowerCase()];
 
                 })
-                .map((spell, i) => <Spell key={`${i}_${spell.name}`} spell={spell} />)}
+                .map((spell, i) => <Spell key={`${i}_${spell.name}`} spell={spell} showAddButton={showAddButton} addSpell={addSpell}/>)}
         </>
 }
 
-const Spell = ({ spell} : { spell: any}) => {
+export const Spell = ({ spell, showAddButton = false, addSpell = () => {}} : { spell: any, showAddButton?: boolean, addSpell?: any}) => {
     const [showExtraInfo, setExtraInfo] = useState<boolean>(false);
 
     return <div className="spell-wrap" onClick={() => setExtraInfo(!showExtraInfo)}>
         <span className="level">{spell.level}</span>
         <div className="spell-name"><h2>{spell.name}</h2></div>
         <div className="spell-info"><span>{spell.school.name}</span><span>{spell.range}</span></div>
+        {showAddButton && <Button onClick={() => addSpell(spell)}>Add spell</Button>}
         {showExtraInfo && <>
             <div><p className="damage_type">{spell.damage?.damage_type.name}</p></div>
             <div><p className="damage_at_levels">{spell.damage?.damage_at_character_level && <>

@@ -1,5 +1,5 @@
-import { Configuration, OpenAIApi } from "openai";
-import { initializeApp } from "firebase/app";
+
+import firebaseapp from "@/util/firebaseapp";
 import { getDatabase, set, ref } from "firebase/database";
 import type { NextApiRequest, NextApiResponse } from 'next'
 
@@ -9,10 +9,7 @@ const firebaseConfig = {
     databaseURL: "https://dungeonsdragons-f84ec-default-rtdb.europe-west1.firebasedatabase.app",
   };
 
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-const openai = new OpenAIApi(configuration);
+
 const notInSRD = [
 `Arcane Gate`,
 `Armor of Agathys`,
@@ -97,11 +94,12 @@ export default async function handler(
     `;
 
     
-    const completion = await openai.createChatCompletion({
-        model: "gpt-3.5-turbo",
-        messages: [{role: "user", content: prompt}],
-        max_tokens: 4000
-    });
+    // const completion = await openai.createChatCompletion({
+    //     model: "gpt-3.5-turbo",
+    //     messages: [{role: "user", content: prompt}],
+    //     max_tokens: 4000
+    // });
+    const completion = { data: { choices: [ { message: { content: 'bla' }}]}};
     const spell = completion?.data?.choices[0]?.message?.content || "";
     
             const spellObj = {
@@ -183,11 +181,11 @@ export default async function handler(
 function saveSpell(spell: any, i: number) {
 
     // Initialize Firebase
-      const app = initializeApp(firebaseConfig);
+      
 
       console.log('saving...', spell.name, i, notInSRD.length);
       // Initialize Realtime Database and get a reference to the service
-      const database = getDatabase(app);
+      const database = getDatabase(firebaseapp);
       set(ref(database, 'spells/' + spell.name), spell);
 }
 
