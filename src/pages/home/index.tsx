@@ -85,7 +85,7 @@ const PlayerCard = ({ name, classDnd, level} : Player) => {
           color="primary"
           href={`/${name}/player`}
         >
-          Visit personal page
+          Visit Character sheet page
         </Link>
       </Card.Footer>
     </Card>
