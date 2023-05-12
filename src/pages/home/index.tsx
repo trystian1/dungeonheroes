@@ -4,23 +4,23 @@ import { Button, Card, Col, Container, Grid, Link, Row, Text } from "@nextui-org
 export const players : Player[] = [
     {
         name: 'Gepetto',
-        classDnd: 'Sorcerer',
-        level: 6
+        classDnd: 'Wizard',
+        level: 7
     },
     {
         name: 'Immor',
         classDnd: 'Warlock',
-        level: 6
+        level: 7
     },
     {
         name: 'Switch',
         classDnd: 'Rogue',
-        level: 6
+        level: 7
     },
     {
         name: 'Baroet',
         classDnd: 'Barbarian',
-        level: 6
+        level: 7
     }
 ]
 
